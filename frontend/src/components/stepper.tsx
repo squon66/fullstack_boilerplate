@@ -20,6 +20,8 @@ export const QuizStepper: React.FC<StepperProps> = ({ questions, onComplete }) =
     }
   };  
 
+  const setAnswer = () => {};
+
   return (
     <div className="relative w-[600px] mx-auto mt-10">
       {questions.map((q: QuizQuestion, idx: number) => (

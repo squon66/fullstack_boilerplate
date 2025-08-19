@@ -91,7 +91,7 @@ export function QuizPage() {
 			<div className="min-h-[400px]">
 
 		
-			{ quizStatus === QuizStatus.InProgress && (
+			{ true && (
 				<QuizStepper
 					questions={questionData}
 					onComplete={() => alert("Quiz completed!")}

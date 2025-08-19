@@ -1,9 +1,53 @@
 # Solution
 
-By _Your name/Email here_
+By Peter Richter/petey.richter@gmail.com
 
 ## Notes on implementation
-_Please leave any details you think are worth sharing regarding your implementation._
+
+Hello.
+
+As discussed I as not able implement logic optimally so some things are not functional due to some time constraints and wasting some time over thinking and revising my strategy a bit.
+
+I did some refactoring which had a lot of effects down stream so where things were once rendering they no longer are.
+
+I did not get to the AI part nor a results page
+
+
+DB NOTES
+
+- since we most likely will have users that might log in to different devices, ideally we would save users state to a db.  I chose not to do this and am just saving to localstorage.  I added some commented out code for possible tables for saving user state.
+
+- beign such a small scale project, sqllite seems adequate for our purposes over more robust dbs like postgres or mysql.  Not sure of the volume of users where concurrency might be an issue. I have did have and issue with returning nested answers in an object format so had to parse as json string.
+
+- didn't like the fact that answers were in a delimited format.  To prone to error and more challeging to track answer state
+
+- I thought that perhaps a more intuitive schema would be to intead of including quizId with each question in quiz_questions table, we could have the quizzes table include an array of question ids associated with that quiz.  That way you can user certain questions on multiple quizzes.  I did not implement this.
+
+- Perhaps a csv file would be better to separate data from schema logic
+
+SERVER NOTES
+
+-I'm used to working with NextJS but obviously that is overkill for this small project and server side rendering doesn't seem critical.
+
+- For caching I choose to user localStorage as opposed to a server memory cache which would still take a server hit.  Although still could be advantageous. Perhaps using an indexDB wold be better given the formatting challenges I had with localStorage
+
+- I tried sharing types on the server with a shared folder but couldn't get it to work.
+
+FRONTEND NOTES
+
+- I never got around to AI question story.  If I did, that would have required a different type of questio so adding questionType to the schema might be appropriate
+
+- I decided to cache the quiz data in localStorage to avoid hitting the server everytime.  Given it's not that big of a payload, perhaps that was overkill.  I attempted to save the users answer data there as well.
+
+- a data store like redux seems overkill so just used context
+
+- I chose localStorage over Cookies because it can hold more data.  I would need to add some kind of expiry logic so data didn't stick around too long and force a refresh.
+
+- I attempted to save quiz data and status for multiple quizzes which seemed necessary and allows more "quiz status" UI.
+
+- Edge cases
+    - There's a chance that a user goes directly to quiz page before root page so perhaps better to get quiz data on app load instead on root page so it's availabel everywhere
+
 
 ## (If you didn't go with the boilerplate) Notes on design/architecture and rationale
 _Please leave notes for what languages / frameworks you chose, and why._

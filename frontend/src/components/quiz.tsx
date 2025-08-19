@@ -86,6 +86,7 @@ type QuestionProps = {
 }
 
 export function Question({ question, onSelect, onNext, isLast }: QuestionProps) {
+  debugger;
   const [questionAnswered, setQuestionAnswered] = useState<boolean>(false);
   const setAnswer = (answer: string, index: number) => {
     console.log("Selected answer:", answer, "for question index:", index);
@@ -113,6 +114,8 @@ type AnswersProps = {
 };
 
 function Answers({ answers, onSelect }: AnswersProps) {
+    debugger;
+
     const [value, setValue] = useState<string>('');
 
     const onAnswerSelected = (value: string) => {
