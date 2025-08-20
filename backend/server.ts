@@ -34,11 +34,11 @@ server.get("/quizzes/:id", (request, reply) => {
 			q.question_order,
 			json_group_array(
 				json_object(
-				'answer_id', a.id,
-				'answer_text', a.answer_text,
-				'is_correct', a.is_correct
+					'id', a.id,
+					'answerText', a.answer_text,
+					'isCorrect', a.is_correct
 				)
-			) AS answers
+			) AS quizAnswers
 			FROM quiz_questions q
 			JOIN quiz_answers a
 			ON q.id = a.question_id

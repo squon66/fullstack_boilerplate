@@ -24,8 +24,6 @@ const router = createBrowserRouter([
 
 export function App() {
 	return (
-		<QuizProvider>
-			<RouterProvider router={router} />
-		</QuizProvider>
+		<RouterProvider router={router} />
 	);
 }

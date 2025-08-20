@@ -9,7 +9,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { quizPath } from "@/paths";
-import type { QuizAnswer, QuizQuestion, QuizWithProgress } from "@/types/quiz-types";
+import type { Quiz, QuizAnswer, QuizQuestion, QuizWithProgress } from "@/types/quiz-types";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -29,13 +29,21 @@ function CenterTableHead({ children }: { children: React.ReactNode }) {
 	);
 }
 
-function QuizItem({ title, id, quizStatus }: QuizWithProgress) {
+export enum QuizStatus {
+	NotStarted = "Not Started",
+	InProgress = "In Progress",
+	Completed = "Completed"
+}
+
+function QuizItem({ title, id }: Quiz) {
 	let buttonLabel = 'Take quiz';
-	if (quizStatus === QuizStatus.InProgress) {
-		buttonLabel = 'Continue quiz';
-	} else if (quizStatus === QuizStatus.Completed) {
-		buttonLabel = 'Review quiz';
-	}
+	// if (quizStatus === QuizStatus.InProgress) {
+	// 	buttonLabel = 'Continue quiz';
+	// } else if (quizStatus === QuizStatus.Completed) {
+	// 	buttonLabel = 'Review quiz';
+	// }
+
+	const quizStatus = QuizStatus.NotStarted;
 
 	return (
 		<TableRow key={id}	>
@@ -50,20 +58,14 @@ function QuizItem({ title, id, quizStatus }: QuizWithProgress) {
 	);
 }
 
-export enum QuizStatus {
-	NotStarted = "Not Started",
-	InProgress = "In Progress",
-	Completed = "Completed"
-}
-
 //Quiz data
-export type Quiz = {
-	id: number;
-	title: string;
-	quizStatus: QuizStatus;
-};
+// export type Quiz = {
+// 	id: number;
+// 	title: string;
+// 	//quizStatus: QuizStatus;
+// };
 
-export function QuizzesList({ quizzes }: { quizzes: QuizWithProgress[] }) {
+export function QuizzesList({ quizzes }: { quizzes: Quiz[] }) {
 	return (
 		<Table>
 			<TableHeader>
@@ -77,79 +79,3 @@ export function QuizzesList({ quizzes }: { quizzes: QuizWithProgress[] }) {
 		</Table>
 	);
 }
-
-type QuestionProps = {
-  question: QuizQuestion;
-  onSelect: (answer: string, index: number) => void;
-  onNext: () => void;
-  isLast: boolean;
-}
-
-export function Question({ question, onSelect, onNext, isLast }: QuestionProps) {
-  debugger;
-  const [questionAnswered, setQuestionAnswered] = useState<boolean>(false);
-  const setAnswer = (answer: string, index: number) => {
-    console.log("Selected answer:", answer, "for question index:", index);
-    setQuestionAnswered(true);
-    // Here you can handle the selected answer, e.g., store it in state or send it to a server
-  };
-  return (
-    <div className="p-6 transition-opacity duration-300">
-      <h2 className="mb-4 text-lg font-semibold">{question.questionText}</h2>
-      <Answers answers={question.quizAnswers} onSelect={setAnswer} />
-      <Button
-        className="mt-2 px-4 py-2 bg-emerald-600 text-white rounded"
-        onClick={onNext}
-        disabled={!questionAnswered}
-      >
-        {isLast ? "Finish" : "Next"}
-      </Button>
-    </div>
-  );
-}
-
-type AnswersProps = {
-  answers: QuizAnswer[];
-  onSelect?: (answer: string, index: number) => void;
-};
-
-function Answers({ answers, onSelect }: AnswersProps) {
-    debugger;
-
-    const [value, setValue] = useState<string>('');
-
-    const onAnswerSelected = (value: string) => {
-        setValue(value);
-        const index = Number.parseInt(value, 10);
-        if (onSelect) {
-        onSelect(answers[index].answerText, index);
-        }
-    };  
-
-  return (
-    <RadioGroup value={value} onValueChange={onAnswerSelected} className="flex flex-col gap-2">
-      {answers.map((answer: QuizAnswer, i: number) => (
-        <Answer
-          key={answer.id}
-          answer={answer}
-          index={i}
-        />
-      ))}
-    </RadioGroup>
-  );
-};
-
-interface AnswerProps {
-  answer: QuizAnswer;
-  index: number;
-  onSelect?: (answer: string, index: number) => void;
-}
-
-function Answer({ answer, index, onSelect }: AnswerProps) {
-  return (
-    <div className="flex items-center">
-      <RadioGroupItem value={index + ''} id={`option${index}`} />
-      <label htmlFor={`option${index}`} className="ml-2">{answer.answerText}</label>
-    </div>
-  );
-};

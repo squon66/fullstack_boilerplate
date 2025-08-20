@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { QuizQuestion } from "@/types/quiz-types";
-import { Question } from "@/components/quiz";
+import { Question } from "@/pages/quiz";
 
 interface StepperProps {
   questions: QuizQuestion[];
