@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
 	Table,
 	TableBody,
@@ -9,8 +8,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { quizPath } from "@/paths";
-import type { Quiz, QuizAnswer, QuizQuestion, QuizWithProgress } from "@/types/quiz-types";
-import { useState } from "react";
+import type { QuizWithProgress } from "@/types/quiz-types";
 import { Link } from "react-router-dom";
 
 function LeftTableCell({ children }: { children: React.ReactNode }) {
@@ -35,15 +33,13 @@ export enum QuizStatus {
 	Completed = "Completed"
 }
 
-function QuizItem({ title, id }: Quiz) {
+function QuizItem({ title, id, quizStatus }: QuizWithProgress) {
 	let buttonLabel = 'Take quiz';
-	// if (quizStatus === QuizStatus.InProgress) {
-	// 	buttonLabel = 'Continue quiz';
-	// } else if (quizStatus === QuizStatus.Completed) {
-	// 	buttonLabel = 'Review quiz';
-	// }
-
-	const quizStatus = QuizStatus.NotStarted;
+	if (quizStatus === QuizStatus.InProgress) {
+		buttonLabel = 'Continue quiz';
+	} else if (quizStatus === QuizStatus.Completed) {
+		buttonLabel = 'Review quiz';
+	}
 
 	return (
 		<TableRow key={id}	>
@@ -65,7 +61,7 @@ function QuizItem({ title, id }: Quiz) {
 // 	//quizStatus: QuizStatus;
 // };
 
-export function QuizzesList({ quizzes }: { quizzes: Quiz[] }) {
+export function QuizzesList({ quizzes }: { quizzes: QuizWithProgress[] }) {
 	return (
 		<Table>
 			<TableHeader>

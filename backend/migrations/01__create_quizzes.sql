@@ -36,7 +36,7 @@ CREATE UNIQUE INDEX one_correct_answer_per_question
     WHERE is_correct = 1;
 
 -- -- Table to record each user's quiz attempt, including total time taken
--- CREATE TABLE user_quiz_attempts (
+-- CREATE TABLE user_quiz_sessions (
 --     id INTEGER PRIMARY KEY AUTOINCREMENT,
 --     user_id INTEGER NOT NULL,
 --     quiz_id INTEGER NOT NULL,
@@ -50,7 +50,7 @@ CREATE UNIQUE INDEX one_correct_answer_per_question
 -- -- Table to record each answer a user gives during a quiz attempt
 -- CREATE TABLE user_quiz_answers (
 --     id INTEGER PRIMARY KEY AUTOINCREMENT,
---     attempt_id INTEGER NOT NULL,
+--     session_id INTEGER NOT NULL,
 --     question_id INTEGER NOT NULL,
 --     answer_id INTEGER NOT NULL,
 --     answered_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

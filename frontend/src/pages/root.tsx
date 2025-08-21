@@ -1,24 +1,21 @@
 import { QuizStatus, QuizzesList } from "@/components/quiz";
-import { QuizContext } from "@/components/quiz-provider";
+import { useQuizzes } from "@/hooks/use-quiz";
 import { quizzesApiUrl } from "@/paths";
 import { STORAGE_KEY } from "@/quiz-reducer";
 import type { Quiz, QuizWithProgress } from "@/types/quiz-types";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 
 export function RootPage() {
-	const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+	//const [quizzes, setQuizzes] = useState<Quiz[]>([]);
 	const [error, setError] = useState<Error | null>(null);
 
-	// const quizCtx = useContext(QuizContext);
-	// if (!quizCtx) throw new Error("Must be used within QuizProvider");
-	
-	//const { state, dispatch } = quizCtx;
+	const quizCtx = useQuizzes();
+	if (!quizCtx) throw new Error("Must be used within QuizProvider");
 
+	const { quizzes, dispatch } = quizCtx;
 	useEffect(() => {
-		// if (state.quizzes && state.quizzes.length > 0) {
-		// 	setQuizzes(state.quizzes);
-		// } else {
+		if (!quizzes || !quizzes.length) {
 			// Fetch quizzes from the API if not found in localStorage
 			fetch(quizzesApiUrl({}))
 				.then((res) => res.json())
@@ -26,7 +23,17 @@ export function RootPage() {
 					if (!data?.length) {
 						throw new Error("No quizzes available");
 					}
-					setQuizzes(data);
+
+					const quizzesWithProgress: QuizWithProgress[] = data.map((quiz) => ({
+						...quiz,
+						quizStatus: QuizStatus.NotStarted,
+						startTime: null,
+						endTime: null,
+						quizAnswers: []
+					}));
+
+					dispatch({ type: "SET_QUIZ_DATA", quizzes: quizzesWithProgress });
+					//setQuizzes(data);
 					// 	const initialData = {
 					// 		lastQuizId: null,
 					// 		quizzes: data,
@@ -48,7 +55,8 @@ export function RootPage() {
 					// }
 				})
 				.catch(setError);
-	}, []);
+			}
+	}, [dispatch, quizzes, quizzes.length]);
 
 	if (error) return <div>An error has occurred: {error.message}</div>;
 

@@ -8,3 +8,10 @@ export function useQuiz() {
   }
   return ctx;
 }
+
+export function useQuizzes() {
+  const ctx = useQuiz();
+  const { state, dispatch } = ctx;
+
+  return {quizzes: state.quizzes, dispatch };
+}

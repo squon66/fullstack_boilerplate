@@ -1,26 +1,18 @@
-import { type QuizAction, quizReducer, STORAGE_KEY } from "@/quiz-reducer";
-import type { AppDataWithProgress, QuizAppData, QuizWithProgress } from "@/types/quiz-types";
+import { type QuizAction, quizReducer, type QuizState } from "@/quiz-reducer";
 import { createContext, useEffect, useReducer, useState } from "react";
 
-// type QuizState = {
-//   quizzes: Quiz[] | null;
-//   currentQuiz: QuizQuestion[] | null;
-//   //quizAnswers?: Record<string, QuizAnswer[]>;
-// };
-
 type QuizContextValue = {
-  state: AppDataWithProgress;
+  state: QuizState;
   dispatch: React.Dispatch<QuizAction>;
 };
 
 // Create Context
-export const QuizContext = createContext<QuizContextValue | undefined>(undefined);
+export const QuizContext = createContext<QuizContextValue>({} as QuizContextValue); 
 
-const initialState: AppDataWithProgress = {
-  lastQuizId: null,
+const initialState: QuizState = {
   quizzes: [],
-  questions: [],
-  savedData: [],
+  currentQuiz: null,
+  savedAnswers: {},
 };
 
 export function QuizProvider({ children }: { children: React.ReactNode }) {
@@ -28,45 +20,45 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
   const [dataInited, setDataInited] = useState<boolean>(false);
 	const [state, dispatch] = useReducer(quizReducer, initialState);
 
-  if (appData && !dataInited) dispatch({ type: "LOAD_FROM_STORAGE", payload: appData });
+  //if (appData && !dataInited) dispatch({ type: "LOAD_FROM_STORAGE", payload: appData });
 
   // Load from localStorage on mount
   useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const quizData: QuizAppData = JSON.parse(raw);
-      if (quizData?.quizzes?.length) {
-        const { lastQuizId, quizzes, questions, savedData } = quizData;
+    // const raw = localStorage.getItem(STORAGE_KEY);
+    // if (raw) {
+    //   const quizData: QuizAppData = JSON.parse(raw);
+    //   if (quizData?.quizzes?.length) {
+    //     const { lastQuizId, quizzes, questions, savedData } = quizData;
 
-        const quizDataWithProgress: QuizWithProgress[] = quizzes.map((quiz) => {
-          const savedQuiz = state?.savedData.find((sq) => sq.quizId === quiz.id);
-          return {
-            ...quiz,
-            quizStatus: savedQuiz?.quizStatus,
-            startTime: savedQuiz?.startTime,
-            endTime: savedQuiz?.endTime,
-          };
-        })
+    //     const quizDataWithProgress: QuizWithProgress[] = quizzes.map((quiz) => {
+    //       const savedQuiz = state?.savedData.find((sq) => sq.quizId === quiz.id);
+    //       return {
+    //         ...quiz,
+    //         quizStatus: savedQuiz?.quizStatus,
+    //         startTime: savedQuiz?.startTime,
+    //         endTime: savedQuiz?.endTime,
+    //       };
+    //     })
 
-        const savedQuiz = savedData.find(s => s.quizId === lastQuizId) ?? null;
+    //     const savedQuiz = savedData.find(s => s.quizId === lastQuizId) ?? null;
 
-        const questionsWithProgress = questions
-          .map(q => ({
-            ...q,
-            savedAnswer: savedQuiz?.answers.find(a => a.questionId === q.id),
-          }));
+    //     const questionsWithProgress = questions
+    //       .map(q => ({
+    //         ...q,
+    //         savedAnswer: savedQuiz?.answers.find(a => a.questionId === q.id),
+    //       }));
 
-        const initData: AppDataWithProgress = {
-          lastQuizId,
-          quizzes: quizDataWithProgress,
-          questions: questionsWithProgress,
-          savedData,
-        };
+    //     const initData: AppDataWithProgress = {
+    //       lastQuizId,
+    //       quizzes: quizDataWithProgress,
+    //       questions: questionsWithProgress,
+    //       savedData,
+    //     };
 
-        setDataInited(true);
-        setAppData(initData)
-      }
-    }
+    //     setDataInited(true);
+    //     setAppData(initData)
+    //   }
+    // }
   }, []);
 
 	return (

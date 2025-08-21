@@ -1,12 +1,10 @@
-import { QuizStatus } from "@/components/quiz";
+import type { QuizStatus } from "@/components/quiz";
 
 // types.ts
 export type Quiz = {
-  id: string;
+  id: number;
   title: string;
   description?: string;
-  //totalPoints: number;
-  //questionIds: string[];
 }
 
 export type QuizAnswer = {
@@ -15,27 +13,32 @@ export type QuizAnswer = {
   isCorrect: boolean;
 }
 
+export type QuizAnswerWithValue = QuizAnswer & {
+  value: string;
+} 
+
 export type QuizQuestion =  {
-  id: string;
-  quizId: string;
+  id: number;
+  quizId: number;
   questionText: string;
   points: number;
   quizAnswers: QuizAnswer[];
 }
 
-export type SavedAnswer = {
-  questionId: string;
-  answerId: string | null;
-  isCorrect: boolean;
+export type CurrentQuizData = {
+  quizId: number;
+  questionData: QuizQuestion[];
+  startTime?: Date | null;
+  endTime?: Date | null;
+  savedAnswers: SavedAnswers;
 }
 
 export type SavedQuizData = {
-  quizId: string;
+  quizId: number;
   quizStatus: QuizStatus;
   startTime: Date | null;
   endTime: Date | null;
-  score: number;
-  answers: SavedAnswer[];
+  answers: SavedAnswers[];
 }
 
 export type QuizAppData = {
@@ -46,13 +49,14 @@ export type QuizAppData = {
 }
 
 export type QuizWithProgress = Quiz & {
-    quizStatus?: QuizStatus;
+    quizStatus: QuizStatus;
     startTime?: Date | null;
     endTime?: Date | null;
+    quizAnswers: SavedAnswers[]
 }
 
 export type QuizQuestionsWithProgress = QuizQuestion & {
-    savedAnswer?: SavedAnswer;
+    savedAnswer?: SavedAnswers;
 }
 
 export type AppDataWithProgress = {
@@ -61,3 +65,5 @@ export type AppDataWithProgress = {
   questions: QuizQuestionsWithProgress[];
   savedData: SavedQuizData[];
 };
+
+export type SavedAnswers = Record<string, string>;
