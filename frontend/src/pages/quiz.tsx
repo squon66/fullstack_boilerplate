@@ -37,8 +37,6 @@ export function QuizPage() {
 	const [quizStatus, setQuizStatus] = useState<QuizStatus | null>(QuizStatus.NotStarted);
 	const [savedAnswers, setSavedAnswers] = useState<SavedAnswers>({});
 
-	console.log('quizQuestions', quizQuestions);
-
 	useEffect(() => {
 		setQuizStatus(initialStatus);
 		setSavedAnswers(currentQuiz?.savedAnswers || {});
@@ -58,7 +56,14 @@ export function QuizPage() {
 						(q.quizAnswers = JSON.parse(q.quizAnswers as string) as QuizAnswer[]);
 					}
 					return q;
+
 				});
+
+				// 	const updatedData = {
+				// 		quizzes,
+				// 		questions: data,
+				// 	}
+				// 	localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData))
 
 				setQuizQuestions(parsedQuestionData);
 			})

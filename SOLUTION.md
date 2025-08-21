@@ -6,18 +6,19 @@ By Peter Richter/petey.richter@gmail.com
 
 Hello.
 
-As discussed I as not able implement logic optimally so some things are not functional due to some time constraints and wasting some time over thinking and revising my strategy a bit.
+I attempted to implement the first 3 stories.  I added some placeholder code for some of the server logic that isn't fully functional but is there for illustration purposes
 
-I did some refactoring which had a lot of effects down stream so where things were once rendering they no longer are.
+I know there are some logical things wrong with state, particularly on test retake but didn't have time to address.
+
 
 I did not get to the AI part nor a results page
 
 
 DB NOTES
 
-- since we most likely will have users that might log in to different devices, ideally we would save users state to a db.  I chose not to do this and am just saving to localstorage.  I added some commented out code for possible tables for saving user state.
+- since we most likely will have users that might log in to different devices, ideally we would save users state to a db instead to just localstorage
 
-- beign such a small scale project, sqllite seems adequate for our purposes over more robust dbs like postgres or mysql.  Not sure of the volume of users where concurrency might be an issue. I have did have and issue with returning nested answers in an object format so had to parse as json string.
+- being such a small scale project, sqllite seems adequate for our purposes over more robust dbs like postgres or mysql.  Not sure of the volume of users where concurrency might be an issue. I have did have and issue with returning nested answers in an object format so had to parse as json string.
 
 - didn't like the fact that answers were in a delimited format.  To prone to error and more challeging to track answer state
 
@@ -35,9 +36,13 @@ SERVER NOTES
 
 FRONTEND NOTES
 
+- Would have liked to be able to more granularly define components but didn't have the time.
+
 - I never got around to AI question story.  If I did, that would have required a different type of questio so adding questionType to the schema might be appropriate
 
-- I decided to cache the quiz data in localStorage to avoid hitting the server everytime.  Given it's not that big of a payload, perhaps that was overkill.  I attempted to save the users answer data there as well.
+- I have logic for saving/retrieving cached data in localStorage but it's commented out.
+
+- I decided to cache the quiz data in localStorage to avoid hitting the server everytime.  Given it's not that big of a payload, perhaps that was overkill.  
 
 - a data store like redux seems overkill so just used context
 

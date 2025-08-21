@@ -35,10 +35,8 @@ export function RootPage() {
 					dispatch({ type: "SET_QUIZ_DATA", quizzes: quizzesWithProgress });
 					//setQuizzes(data);
 					// 	const initialData = {
-					// 		lastQuizId: null,
 					// 		quizzes: data,
 					// 		questions: [],
-					// 		savedData: [],
 					// 	}
 					// 	localStorage.setItem(STORAGE_KEY, JSON.stringify(initialData))
 					// 	const savedQuizData = data.map((q) => ({
