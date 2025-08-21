@@ -52,7 +52,7 @@ export type QuizWithProgress = Quiz & {
     quizStatus: QuizStatus;
     startTime?: Date | null;
     endTime?: Date | null;
-    quizAnswers: SavedAnswers[]
+    quizAnswers: SavedAnswers[];
 }
 
 export type QuizQuestionsWithProgress = QuizQuestion & {

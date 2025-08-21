@@ -1,4 +1,4 @@
-import { QuizQuestion, SavedAnswers } from "@/types/quiz-types";
+import type { QuizQuestion, SavedAnswers } from "@/types/quiz-types";
 
 type QuizResultsProps = {
   questions: QuizQuestion[];
@@ -14,8 +14,9 @@ export function QuizResults({ questions, answers }: QuizResultsProps) {
 
     const quizStats = questions.reduce((acc, q) => {
         const answerId = answers[q.id];
-        const chosenAnswer = q.quizAnswers.find(a => a.id == answerId);
-        if (chosenAnswer && chosenAnswer.isCorrect) {
+
+        const chosenAnswer = q.quizAnswers.find(a => a.id === answerId);
+        if (chosenAnswer?.isCorrect) {
             return { totalPoints: acc.totalPoints + q.points, numCorrect: acc.numCorrect + 1 };
         }
         return acc;
@@ -23,7 +24,7 @@ export function QuizResults({ questions, answers }: QuizResultsProps) {
 
     const incorrectAnswers = questions.filter(q => {
         const answerId = answers[q.id];
-        const chosenAnswer = q.quizAnswers.find(a => a.id == answerId);
+        const chosenAnswer = q.quizAnswers.find(a => a.id === answerId);
         return chosenAnswer && !chosenAnswer.isCorrect;
     });
 
@@ -38,7 +39,7 @@ export function QuizResults({ questions, answers }: QuizResultsProps) {
             {incorrectAnswers.length === 0 && <div>None! Great job!</div>}
             {incorrectAnswers.map(q => {
                 const answerId = answers[q.id];
-                const chosenAnswer = q.quizAnswers.find(a => a.id == answerId);
+                const chosenAnswer = q.quizAnswers.find(a => a.id === answerId);
                 return (
                     <div key={q.id} className="mt-2">
                         <div className="font-semibold italic">{q.questionText}</div>

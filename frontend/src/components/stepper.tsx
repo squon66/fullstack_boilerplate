@@ -4,6 +4,8 @@ import type { QuizAnswerWithValue, QuizQuestion, SavedAnswers } from "@/types/qu
 import { Question } from "@/components/question";
 import { useQuiz } from "@/hooks/use-quiz";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { answerQuizApiUrl } from "@/paths";
 
 interface StepperProps {
   //squestions: QuizQuestion[];
@@ -14,7 +16,7 @@ interface StepperProps {
 export function QuizStepper({ onComplete }: StepperProps) {
   const quizCtx = useQuiz()
 
-  const { state } = quizCtx;
+  const { state, dispatch } = quizCtx;
   const {currentQuiz} = state || {};
   const questions: QuizQuestion[] = currentQuiz?.questionData || [];
   if (!questions.length) {
@@ -40,32 +42,38 @@ export function QuizStepper({ onComplete }: StepperProps) {
     }
   };
 
-  
-
   // Update answerValues for the current question
   const onQuestionAnswered = (answerId: string) => {
-
     setAnswerValues((prev) => ({
-    ...prev,
-    [currentQuestion.id]: answerId,
-  }));
+      ...prev,
+      [currentQuestion.id]: answerId,
+    }));
 
-    //  setAnswerValues((prev) => {
-    //   const updated = prev.map((answersArr, qIdx) => {
-    //     if (qIdx !== currentStep) return answersArr;
-    //     return answersArr.map((ans, idx) =>
-    //       idx === answerIndex ? { ...ans, value: answer } : ans
-    //     );
-    //   });
-    //   return updated;
-    // });
+    const quizId = String(currentQuiz?.quizId);
+    
+    fetch(answerQuizApiUrl({ id: quizId }), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          questionId: currentQuestion.id,
+          answerId: answerId,
+          sessionId: 'session-id',
+        }),
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        dispatch({ type: "SAVE_ANSWER", quizId: quizId, answerId: answerId });
+      })
+      .catch((error) => {
+        console.error("Error starting quiz:", error);
+      });
   };
-
-  console.log(answerValues) 
-  console.log(currentQuestion.id)
 
   return (
     <div className="relative w-[600px] mx-auto mt-10">
+      <Progress value={(currentStep / totalSteps) * 100} />
       {questions.map((q: QuizQuestion, idx: number) => (
         <Step
           key={q.id}

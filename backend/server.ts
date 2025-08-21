@@ -79,20 +79,16 @@ server.post("/quizzes/:id/start", (request, reply) => {
 
 server.post("/quizzes/:id/answer", (request, reply) => {
 		const { id } = request.params as { id: number | string };
-		const { questionId, answer, sessionId } = request.body as { questionId: number; answer: string, sessionId: string };
-		if (!questionId || !answer || !sessionId) {
-			reply.status(400).send({ error: "Missing questionId, answer or sessionId in request body" });
+		const { questionId, answerId, sessionId } = request.body as { questionId: number; answerId: string, sessionId: string };
+		if (!questionId || !answerId || !sessionId) {
+			reply.status(400).send({ error: "Missing questionId, answerId or sessionId in request body" });
 			return;
 		}
-
 		// Save the answer to the database, now including sessionId
-		db.prepare(`
-			INSERT INTO user_quiz_answers (session_id, quiz_id, question_id, answer_text)
-			VALUES (:sessionId, :quizId, :questionId, :answer)
-		`).run({ sessionId, quizId: id, questionId, answer });
+
 
 		// Optionally, you could return a success message
-		reply.send({ success: true, quizId: id, questionId, answer });
+		reply.send({ success: true, quizId: id, questionId, answerId, sessionId });
 });
 
 server.post("/quizzes/:id/finish", (request, reply) => {

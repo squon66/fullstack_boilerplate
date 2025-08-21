@@ -1,5 +1,5 @@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { QuizAnswer, QuizQuestion } from "@/types/quiz-types";
+import type { QuizAnswer, QuizQuestion } from "@/types/quiz-types";
 import { useState } from "react";
 
 type QuestionProps = {

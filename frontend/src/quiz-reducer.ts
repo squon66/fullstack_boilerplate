@@ -12,7 +12,7 @@ export type QuizAction =
   | { type: "START_QUIZ"; currentQuiz: CurrentQuizData }
   | { type: "SET_QUIZ_DATA"; quizzes: QuizWithProgress[]}
   | { type: "SAVE_ANSWER"; quizId: string; answerId: string }
-  | { type: "COMPLETE_QUIZ"; quizId: string; score: number }
+  | { type: "COMPLETE_QUIZ"; quizId: string; }
   | { type: "RESET_QUIZ"; quizId: string };
 
 export const STORAGE_KEY = "quizAppData";
@@ -56,14 +56,24 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
       };
     }
 
-    // case "COMPLETE_QUIZ": {
-    //   return {
-    //     ...state,
-    //     savedData: state.savedData.map((d) =>
-    //       d.quizId === action.quizId ? { ...d, completed: true, score: action.score } : d
-    //     ),
-    //   };
-    // }
+    case "COMPLETE_QUIZ": {
+      const quizId = action.quizId;
+      const updatedQuizzes = state.quizzes.map((quiz) => {
+        if (quiz.id === Number.parseInt(quizId, 10)) {
+          return {
+            ...quiz,
+            quizStatus: QuizStatus.Completed,
+            endTime: new Date(),
+          };
+        }
+        return quiz;
+      });
+      return {
+        ...state,
+        quizzes: updatedQuizzes,
+        currentQuiz: null,
+      };
+    }
 
     // case "RESET_QUIZ": {
     //   return {

@@ -37,32 +37,34 @@ export function QuizPage() {
 	const [quizStatus, setQuizStatus] = useState<QuizStatus | null>(QuizStatus.NotStarted);
 	const [savedAnswers, setSavedAnswers] = useState<SavedAnswers>({});
 
+	console.log('quizQuestions', quizQuestions);
+
 	useEffect(() => {
 		setQuizStatus(initialStatus);
 		setSavedAnswers(currentQuiz?.savedAnswers || {});
-	}, []);
+	}, [ initialStatus, currentQuiz ]);
 
 	useEffect(() => {
-			if (!currentQuiz || currentQuiz.quizId !== id) {
-				fetch(quizApiUrl({ id: idParam }))
-				.then((res) => res.json())
-				.then((data: QuizQuestion[]) => {
-					if (!data?.length) {
-						throw new Error("No questions found for this quiz");
+		if (!currentQuiz || currentQuiz.quizId !== id) {
+			fetch(quizApiUrl({ id: idParam }))
+			.then((res) => res.json())
+			.then((data: QuizQuestion[]) => {
+				if (!data?.length) {
+					throw new Error("No questions found for this quiz");
+				}
+
+				const parsedQuestionData = data.map((q) => {
+					if (typeof q.quizAnswers === "string") {
+						(q.quizAnswers = JSON.parse(q.quizAnswers as string) as QuizAnswer[]);
 					}
+					return q;
+				});
 
-					const parsedQuestionData = data.map((q) => {
-						if (typeof q.quizAnswers === "string") {
-							(q.quizAnswers = JSON.parse(q.quizAnswers as string) as QuizAnswer[]);
-						}
-						return q;
-					});
-
-					setQuizQuestions(parsedQuestionData);
-				})
-				.catch(setError);
-			}
-	}, [id, state.currentQuiz]);
+				setQuizQuestions(parsedQuestionData);
+			})
+			.catch(setError);
+		}
+	}, [id, currentQuiz, idParam]);
 
 	if (error)
 		return (
@@ -89,17 +91,17 @@ export function QuizPage() {
 			},
 			body: JSON.stringify({userId: 'userid'}),
 		})
-			.then((res) => res.json())
-			.then((data) => {
-				const savedAnswers = data?.answers || {};
-				quizData.savedAnswers = savedAnswers;
-				if (data.status === 'in-progress') quizData.startTime = data.startTime;
-				setQuizStatus(QuizStatus.InProgress);
-				dispatch({ type: "START_QUIZ", currentQuiz: quizData });
-			})
-			.catch((error) => {
-				console.error("Error starting quiz:", error);
-			});
+		.then((res) => res.json())
+		.then((data) => {
+			const savedAnswers = data?.answers || {};
+			quizData.savedAnswers = savedAnswers;
+			if (data.status === 'in-progress') quizData.startTime = data.startTime;
+			setQuizStatus(QuizStatus.InProgress);
+			dispatch({ type: "START_QUIZ", currentQuiz: quizData });
+		})
+		.catch((error) => {
+			console.error("Error starting quiz:", error);
+		});
 	};
 
 	return (
@@ -124,6 +126,8 @@ export function QuizPage() {
 					onComplete={(quizAnswers) => {
 						setSavedAnswers(quizAnswers);
 						setQuizStatus(QuizStatus.Completed);
+
+						//dispatch({ type: "COMPLETE_QUIZ", quizId: String(id) });
 					}}
 				/>
 			)}
