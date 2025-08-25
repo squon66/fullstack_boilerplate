@@ -8,13 +8,19 @@ type QuestionProps = {
   onQuestionAnswered: (answerId: string) => void;
 }
 
+function QuestionText({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="mb-4 text-lg font-semibold">{children}</h2>
+  );
+}
 export function Question({ question, savedAnswer, onQuestionAnswered }: QuestionProps) {
   const onAnswerSelected = (answerId: string) => {
     onQuestionAnswered(answerId);
   };
+
 	return (
 		<div className="p-6 transition-opacity duration-300">
-			<h2 className="mb-4 text-lg font-semibold">{question.questionText}</h2>
+      <QuestionText>{question.questionText}</QuestionText>
 			<Answers answers={question.quizAnswers} savedAnswerId={savedAnswer} onAnswerSelected={onAnswerSelected} />
 		</div>
 	);
@@ -31,7 +37,6 @@ function Answers({ answers, savedAnswerId, onAnswerSelected }: AnswersProps) {
 
     const onValueChange= (value: string) => {
         setValue(value);
-        //const index = Number.parseInt(value, 10);
         onAnswerSelected?.(value);
     };  
 
@@ -47,16 +52,30 @@ function Answers({ answers, savedAnswerId, onAnswerSelected }: AnswersProps) {
   );
 };
 
-interface AnswerProps {
+type AnswerProps = {
   answer: QuizAnswer;
 }
 
 function Answer({ answer }: AnswerProps) {
 	const { id, answerText } = answer;
   return (
-    <div className="flex items-center">
+    <RadioGroupContainer>
       <RadioGroupItem value={id} id={`option${id}`} />
-      <label htmlFor={`option${id}`} className="ml-2">{answerText}</label>
-    </div>
+      <RadioGroupLabel id={id} answerText={answerText} />
+    </RadioGroupContainer>
   );
 };
+
+function RadioGroupContainer({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center">
+      {children}
+    </div>
+  );
+}
+
+function RadioGroupLabel({ id, answerText }: { id: string; answerText: string }) {
+  return (
+    <label htmlFor={`option${id}`} className="ml-2">{answerText}</label>
+  );  
+}
