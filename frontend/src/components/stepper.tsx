@@ -1,30 +1,48 @@
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import type { QuizAnswerWithValue, QuizQuestion, SavedAnswers } from "@/types/quiz-types";
+import type { QuizQuestion, SavedAnswers } from "@/types/quiz-types";
 import { Question } from "@/components/question";
-import { useQuiz } from "@/hooks/use-quiz";
+import { useQuizContext } from "@/hooks/use-quiz";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { answerQuizApiUrl } from "@/paths";
 
 interface StepperProps {
-  //squestions: QuizQuestion[];
+  questions: QuizQuestion[];
   onComplete?: (quizAnswers: SavedAnswers) => void;
 }
 
+type QuestionFooterProps = {
+	onNext: () => void;
+	onPrevious: () => void;
+	isFirst: boolean;
+	isLast: boolean;
+	questionAnswered: boolean;
+};
+
+type PreviousButtonProps = {
+	onPrevious: () => void;
+	disabled: boolean;
+};
+
+type NextButtonProps = {
+	onNext: () => void;
+	isLast: boolean;
+	disabled: boolean;
+};
+
 //export const Stepper: React.FC<StepperProps> = ({ onComplete }) => {
-export function QuizStepper({ onComplete }: StepperProps) {
-  const quizCtx = useQuiz()
+export function QuizStepper({ questions, onComplete }: StepperProps) {
+  const quizCtx = useQuizContext()
 
   const { state, dispatch } = quizCtx;
-  const {currentQuiz} = state || {};
-  const questions: QuizQuestion[] = currentQuiz?.questionData || [];
   if (!questions.length) {
     return <div className="text-red-500 p-4">No questions available for this quiz.</div>;
   }
 
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [answerValues, setAnswerValues] = useState<SavedAnswers>(currentQuiz?.savedAnswers || {});
+  //const [answerValues, setAnswerValues] = useState<SavedAnswers>(currentQuiz?.savedAnswers || {});
+  const [answerValues, setAnswerValues] = useState<SavedAnswers>({});
 
   const totalSteps: number = questions.length;
   const currentQuestion = questions[currentStep];
@@ -49,26 +67,28 @@ export function QuizStepper({ onComplete }: StepperProps) {
       [currentQuestion.id]: answerId,
     }));
 
-    const quizId = String(currentQuiz?.quizId);
-    
-    fetch(answerQuizApiUrl({ id: quizId }), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          questionId: currentQuestion.id,
-          answerId: answerId,
-          sessionId: 'session-id',
-        }),
-      })
-      .then((res) => res.json())
-      .then((data) => {
-        dispatch({ type: "SAVE_ANSWER", quizId: quizId, answerId: answerId });
-      })
-      .catch((error) => {
-        console.error("Error starting quiz:", error);
-      });
+    dispatch({ type: "SAVE_ANSWER", quizId: String(currentQuestion.id), answerId: answerId });
+
+    //const quizId = String(currentQuiz?.quizId);
+
+    // fetch(answerQuizApiUrl({ id: quizId }), {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       questionId: currentQuestion.id,
+    //       answerId: answerId,
+    //       sessionId: 'session-id',
+    //     }),
+    //   })
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     dispatch({ type: "SAVE_ANSWER", quizId: quizId, answerId: answerId });
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error starting quiz:", error);
+    //   });
   };
 
   return (
@@ -124,29 +144,33 @@ export const Step = React.forwardRef<
 });
 Step.displayName = "Step"
 
-type QuestionFooterProps = {
-	onNext: () => void;
-	onPrevious: () => void;
-	isFirst: boolean;
-	isLast: boolean;
-	questionAnswered: boolean;
-};
-
 function QuestionFooter({ onNext, onPrevious, isFirst, isLast, questionAnswered }: QuestionFooterProps) {
 	return (
 		<div className="flex gap-4 mt-2">
-			<Button
-				onClick={onPrevious}
-				disabled={isFirst}
-			>
-				Previous
-			</Button>
-			<Button
-				onClick={onNext}
-				disabled={!questionAnswered}
-			>
-				{isLast ? "Finish" : "Next"}
-			</Button>
+			<PreviousButton onPrevious={onPrevious} disabled={isFirst} />
+      <NextButton onNext={onNext} isLast={isLast} disabled={!questionAnswered} />
 		</div>
 	);
+}
+
+function PreviousButton({ onPrevious, disabled } : PreviousButtonProps) {
+  return (
+    <Button
+      onClick={onPrevious}
+      disabled={disabled}
+    >
+      Previous
+    </Button>
+  );
+}
+
+function NextButton({ onNext, disabled, isLast } : NextButtonProps) {
+  return (
+    <Button
+      onClick={onNext}
+      disabled={disabled}
+    >
+      {isLast ? "Finish" : "Next"}
+    </Button>
+  );
 }

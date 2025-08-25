@@ -1,3 +1,4 @@
+import { QuizContext } from "@/components/quiz-provider";
 import { Button } from "@/components/ui/button";
 import {
 	Table,
@@ -9,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { quizPath } from "@/paths";
 import type { QuizWithProgress } from "@/types/quiz-types";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 
 function LeftTableCell({ children }: { children: React.ReactNode }) {
@@ -33,7 +35,15 @@ export enum QuizStatus {
 	Completed = "Completed"
 }
 
-function QuizItem({ title, id, quizStatus }: QuizWithProgress) {
+//function QuizItem({ title, id, quizStatus }: QuizWithProgress) {
+function QuizItem(quiz: QuizWithProgress) {
+	const quizCtx = useContext(QuizContext);
+	const { state } = quizCtx;
+	const { quizzes } = state;
+	const selectedQuiz = quizzes.find((q) => q?.id === quiz?.id);
+
+	const { quizStatus, title, id } = selectedQuiz || {};
+
 	let buttonLabel = 'Take quiz';
 	if (quizStatus === QuizStatus.InProgress) {
 		buttonLabel = 'Continue quiz';
@@ -54,14 +64,8 @@ function QuizItem({ title, id, quizStatus }: QuizWithProgress) {
 	);
 }
 
-//Quiz data
-// export type Quiz = {
-// 	id: number;
-// 	title: string;
-// 	//quizStatus: QuizStatus;
-// };
-
 export function QuizzesList({ quizzes }: { quizzes: QuizWithProgress[] }) {
+//export function QuizzesList({ quizzes }: { quizzes: Quiz[] }) {
 	return (
 		<Table>
 			<TableHeader>

@@ -7,69 +7,31 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { QuizStepper } from "@/components/stepper";
-import { quizApiUrl, rootPath, startQuizApiUrl } from "@/paths";
-import { useEffect, useState } from "react";
+import { rootPath } from "@/paths";
 import { Link, useParams } from "react-router-dom";
-import type { CurrentQuizData, QuizAnswer, QuizQuestion, SavedAnswers } from "@/types/quiz-types";
 import { QuizStatus } from "@/components/quiz";
-import { useQuiz } from "@/hooks/use-quiz";
 import { QuizResults } from "@/components/QuizResults";
+import { useFetchQuiz, useFetchQuizzes } from "@/hooks/use-fetch";
+import { useQuizContext } from "@/hooks/use-quiz";
 
 export function QuizPage() {
-		const { id: idParam } = useParams();
-		if (!idParam) throw new Error("Quiz id param is required");
-		const id = Number(idParam);
+	const { id: idParam } = useParams();
+	if (!idParam) throw new Error("Quiz id param is required");
+	const id = Number(idParam);
 
-	const quizCtx = useQuiz();
+	const { quizzes, loading: quizzesLoading, error: quizzesError } = useFetchQuizzes();
+	const { quiz, loading: quizLoading, error: quizError } = useFetchQuiz(id);
 
-	const { state, dispatch } = quizCtx;
+	console.log(quiz?.savedAnswers)
 
-	const { quizzes, currentQuiz } = state;
+	const quizCtx = useQuizContext();
+	const { dispatch } = quizCtx;
 
-	const selectedQuiz = quizzes.find((quiz) => quiz.id === id);
-	if (!selectedQuiz) throw new Error(`Quiz with id ${id} not found in context`);
+	const selectedQuiz = quizzes.find((quiz) => quiz?.id === id);
 
-	const { quizStatus: initialStatus, title } = selectedQuiz;
+	const { title, quizStatus } = selectedQuiz || {};
 
-	//const [questionData, setQuestionData] = useState<QuizQuestionsWithProgress[] | null>(null);
-	const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
-	const [error, setError] = useState<Error | null>(null);
-	const [quizStatus, setQuizStatus] = useState<QuizStatus | null>(QuizStatus.NotStarted);
-	const [savedAnswers, setSavedAnswers] = useState<SavedAnswers>({});
-
-	useEffect(() => {
-		setQuizStatus(initialStatus);
-		setSavedAnswers(currentQuiz?.savedAnswers || {});
-	}, [ initialStatus, currentQuiz ]);
-
-	useEffect(() => {
-		if (!currentQuiz || currentQuiz.quizId !== id) {
-			fetch(quizApiUrl({ id: idParam }))
-			.then((res) => res.json())
-			.then((data: QuizQuestion[]) => {
-				if (!data?.length) {
-					throw new Error("No questions found for this quiz");
-				}
-
-				const parsedQuestionData = data.map((q) => {
-					if (typeof q.quizAnswers === "string") {
-						(q.quizAnswers = JSON.parse(q.quizAnswers as string) as QuizAnswer[]);
-					}
-					return q;
-
-				});
-
-				// 	const updatedData = {
-				// 		quizzes,
-				// 		questions: data,
-				// 	}
-				// 	localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData))
-
-				setQuizQuestions(parsedQuestionData);
-			})
-			.catch(setError);
-		}
-	}, [id, currentQuiz, idParam]);
+	const error = quizError || quizzesError;
 
 	if (error)
 		return (
@@ -79,34 +41,10 @@ export function QuizPage() {
 			</div>
 		);
 
-	if (!quizQuestions) return <div className="text-center p-8">Loading...</div>;
+	if (quizLoading || quizzesLoading || !quiz) return <div className="text-center p-8">Loading...</div>;
 
 	const onStartQuiz = () => {
-		const quizData: CurrentQuizData = {
-			quizId: id,
-			questionData: quizQuestions,
-			startTime: new Date(),
-			savedAnswers: {},
-		};
-
-		fetch(startQuizApiUrl({ id: idParam }), {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({userId: 'userid'}),
-		})
-		.then((res) => res.json())
-		.then((data) => {
-			const savedAnswers = data?.answers || {};
-			quizData.savedAnswers = savedAnswers;
-			if (data.status === 'in-progress') quizData.startTime = data.startTime;
-			setQuizStatus(QuizStatus.InProgress);
-			dispatch({ type: "START_QUIZ", currentQuiz: quizData });
-		})
-		.catch((error) => {
-			console.error("Error starting quiz:", error);
-		});
+		dispatch({ type: "START_QUIZ", quizId: id });
 	};
 
 	return (
@@ -126,19 +64,22 @@ export function QuizPage() {
 			<div className="min-h-[400px]">
 
 
+
+
 			{ quizStatus === QuizStatus.InProgress && (
 				<QuizStepper
-					onComplete={(quizAnswers) => {
-						setSavedAnswers(quizAnswers);
-						setQuizStatus(QuizStatus.Completed);
+					questions={quiz.questionData}
+					onComplete={(quizAnsers) => {
+						//setSavedAnswers(quizAnswers);
+						//setQuizStatus(QuizStatus.Completed);
 
-						//dispatch({ type: "COMPLETE_QUIZ", quizId: String(id) });
+						dispatch({ type: "COMPLETE_QUIZ", quizId: String(id) });
 					}}
 				/>
 			)}
 
 			{ quizStatus === QuizStatus.Completed && (
-				<QuizResults questions={quizQuestions} answers={savedAnswers} />
+				<QuizResults questions={quiz?.questionData} answers={quiz?.savedAnswers} />
 			)}
 			</div>
 			<div className="flex justify-between pt-8">

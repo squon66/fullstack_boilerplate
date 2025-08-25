@@ -13,10 +13,6 @@ export type QuizAnswer = {
   isCorrect: boolean;
 }
 
-export type QuizAnswerWithValue = QuizAnswer & {
-  value: string;
-} 
-
 export type QuizQuestion =  {
   id: number;
   quizId: number;
@@ -26,44 +22,18 @@ export type QuizQuestion =  {
 }
 
 export type CurrentQuizData = {
-  quizId: number;
+  quizId: string;
   questionData: QuizQuestion[];
   startTime?: Date | null;
   endTime?: Date | null;
   savedAnswers: SavedAnswers;
 }
 
-export type SavedQuizData = {
-  quizId: number;
-  quizStatus: QuizStatus;
-  startTime: Date | null;
-  endTime: Date | null;
-  answers: SavedAnswers[];
-}
-
-export type QuizAppData = {
-  lastQuizId: string | null;
-  quizzes: Quiz[];
-  questions: QuizQuestion[];
-  savedData: SavedQuizData[];
-}
-
-export type QuizWithProgress = Quiz & {
+export type QuizWithProgress = (Quiz & {
     quizStatus: QuizStatus;
     startTime?: Date | null;
     endTime?: Date | null;
     quizAnswers: SavedAnswers[];
-}
-
-export type QuizQuestionsWithProgress = QuizQuestion & {
-    savedAnswer?: SavedAnswers;
-}
-
-export type AppDataWithProgress = {
-  lastQuizId: string | null;
-  quizzes: QuizWithProgress[];
-  questions: QuizQuestionsWithProgress[];
-  savedData: SavedQuizData[];
-};
+}) | null
 
 export type SavedAnswers = Record<string, string>;
