@@ -8,9 +8,6 @@ Hello.
 
 I attempted to implement the first 3 stories.  I added some placeholder code for some of the server logic that isn't fully functional but is there for illustration purposes
 
-I know there are some logical things wrong with state, particularly on test retake but didn't have time to address.
-
-
 I did not get to the AI part nor a results page
 
 
@@ -32,15 +29,9 @@ SERVER NOTES
 
 - For caching I choose to user localStorage as opposed to a server memory cache which would still take a server hit.  Although still could be advantageous. Perhaps using an indexDB wold be better given the formatting challenges I had with localStorage
 
-- I tried sharing types on the server with a shared folder but couldn't get it to work.
-
 FRONTEND NOTES
 
-- Would have liked to be able to more granularly define components but didn't have the time.
-
 - I never got around to AI question story.  If I did, that would have required a different type of questio so adding questionType to the schema might be appropriate
-
-- I have logic for saving/retrieving cached data in localStorage but it's commented out.
 
 - I decided to cache the quiz data in localStorage to avoid hitting the server everytime.  Given it's not that big of a payload, perhaps that was overkill.  
 
@@ -49,9 +40,6 @@ FRONTEND NOTES
 - I chose localStorage over Cookies because it can hold more data.  I would need to add some kind of expiry logic so data didn't stick around too long and force a refresh.
 
 - I attempted to save quiz data and status for multiple quizzes which seemed necessary and allows more "quiz status" UI.
-
-- Edge cases
-    - There's a chance that a user goes directly to quiz page before root page so perhaps better to get quiz data on app load instead on root page so it's availabel everywhere
 
 
 ## (If you didn't go with the boilerplate) Notes on design/architecture and rationale
