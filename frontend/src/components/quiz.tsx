@@ -41,7 +41,6 @@ function QuizItem(quiz: QuizWithProgress) {
 	const { state } = quizCtx;
 	const { quizzes } = state;
 	const selectedQuiz = quizzes.find((q) => q?.id === quiz?.id);
-
 	const { quizStatus, title, id } = selectedQuiz || {};
 
 	let buttonLabel = 'Take quiz';

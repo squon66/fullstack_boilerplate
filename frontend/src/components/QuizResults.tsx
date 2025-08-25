@@ -30,24 +30,53 @@ export function QuizResults({ questions, answers }: QuizResultsProps) {
 
     return (
         <div>
-            <h2 className="text-lg font-bold">Quiz Results</h2>
-            <p className="mt-2">You have completed the quiz!</p>
-            <div className="mt-2">Num Correct: {quizStats.numCorrect}/{totalQuestions}</div>
-            <div className="mt-2">Points: {quizStats.totalPoints}</div>
-            
-            <div className="underline font-semibold">Incorrect Answers</div>
+            <QuizResultsTitle>Quiz Results</QuizResultsTitle>
+            <QuizResultsSubtitle>You have completed the quiz!</QuizResultsSubtitle>
+            <QuizResultsData>Num Correct: {quizStats.numCorrect}/{totalQuestions}</QuizResultsData>
+            <QuizResultsData>Points: {quizStats.totalPoints}</QuizResultsData>
+
+            <QuizResultsHeading>Incorrect Answers</QuizResultsHeading>
             {incorrectAnswers.length === 0 && <div>None! Great job!</div>}
             {incorrectAnswers.map(q => {
-                const answerId = answers[q.id];
-                const chosenAnswer = q.quizAnswers.find(a => a.id === answerId);
-                return (
-                    <div key={q.id} className="mt-2">
-                        <div className="font-semibold italic">{q.questionText}</div>
-                        <div>Your answer: {chosenAnswer?.answerText || "No answer"}</div>
-                        <div>Correct answer: {q.quizAnswers.find(a => a.isCorrect)?.answerText}</div>
-                    </div>
-                );
+                return <QuizResultAnswers question={q} answers={answers} />;
             })}
         </div>
     )
+}
+
+function QuizResultsTitle({ children }: { children: React.ReactNode }) {
+    return (
+        <h2 className="text-lg font-bold">{children}</h2>
+    );
+}
+
+function QuizResultsSubtitle({ children }: { children: React.ReactNode }) {
+    return (
+        <p className="mt-2">{children}</p>
+    );
+}   
+
+function QuizResultsData({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="mt-2">{children}</div>
+    );
+}
+
+function QuizResultsHeading({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="underline font-semibold">{children}</div>
+    );
+}
+
+function QuizResultAnswers({ question, answers }: { question: QuizQuestion; answers: SavedAnswers }) {
+    const answerId = answers[question.id];
+    const chosenAnswer = question.quizAnswers.find(a => a.id === answerId);
+
+    return (
+        <div key={question.id} className="mt-2">
+            <div className="font-semibold italic">{question.questionText}</div>
+            <div>Your answer: {chosenAnswer?.answerText || "No answer"}</div>
+            <div>Correct answer: {question.quizAnswers.find(a => a.isCorrect)?.answerText}</div>
+        </div>
+    );
 }
