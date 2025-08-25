@@ -9,7 +9,7 @@ export type QuizState = {
 export type QuizAction =
   | { type: "LOAD_FROM_STORAGE"; payload: QuizState }
   | { type: "SET_CURRENT_QUIZ"; quiz: CurrentQuizData; }
-  | { type: "START_QUIZ"; quizId: number }
+  | { type: "START_QUIZ"; quizId: string }
   | { type: "SET_QUIZZES_DATA"; quizzes: QuizWithProgress[]}
   | { type: "SAVE_ANSWER"; quizId: string; answerId: string }
   | { type: "COMPLETE_QUIZ"; quizId: string; }
@@ -42,8 +42,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         const quizId = action.quizId;
 
         const updatedQuizzes = state.quizzes.map((quiz) => {
-          if (quiz?.id === quizId) {
- 
+          if (quiz?.id.toString() === quizId) {
             return {
               ...quiz,
               quizStatus: QuizStatus.InProgress,
@@ -73,7 +72,7 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
     case "COMPLETE_QUIZ": {
       const quizId = action.quizId;
       const updatedQuizzes = state.quizzes.map((quiz) => {
-        if (quiz?.id === Number.parseInt(quizId, 10)) {
+        if (quiz?.id.toString() === quizId) {
           return {
             ...quiz,
             quizStatus: QuizStatus.Completed,

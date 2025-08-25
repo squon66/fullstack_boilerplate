@@ -51,7 +51,7 @@ export function useFetchQuizzes(): {
   };
 }
 
-export function useFetchQuiz(quizId: number): {
+export function useFetchQuiz(quizId: string): {
   quiz: CurrentQuizData | null;
   loading: boolean;
   error: Error | null;
@@ -60,7 +60,7 @@ export function useFetchQuiz(quizId: number): {
   const { state, dispatch } = useQuizContext();
 
   useEffect(() => {
-    if (state.currentQuiz) return; // ✅ already cached, skip fetch
+    if (state.currentQuiz?.quizId === quizId) return; // ✅ already cached, skip fetch
 
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -71,7 +71,7 @@ export function useFetchQuiz(quizId: number): {
       }
     }
 
-    fetch(quizApiUrl({ id: String(quizId) }))
+    fetch(quizApiUrl({ id: quizId }))
       .then((res) => res.json())
       .then((data: QuizQuestion[]) => {
         if (!data?.length) {
@@ -86,7 +86,7 @@ export function useFetchQuiz(quizId: number): {
         });
 
         const currentQuiz: CurrentQuizData = {
-          quizId: String(quizId),
+          quizId: quizId,
           questionData: parsedQuestionData,
           //quizStatus: QuizStatus.NotStarted,
           startTime: null,

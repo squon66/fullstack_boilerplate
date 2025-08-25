@@ -2,7 +2,7 @@ import type { QuizStatus } from "@/components/quiz";
 
 // types.ts
 export type Quiz = {
-  id: number;
+  id: string;
   title: string;
   description?: string;
 }
@@ -14,8 +14,8 @@ export type QuizAnswer = {
 }
 
 export type QuizQuestion =  {
-  id: number;
-  quizId: number;
+  id: string;
+  quizId: string;
   questionText: string;
   points: number;
   quizAnswers: QuizAnswer[];

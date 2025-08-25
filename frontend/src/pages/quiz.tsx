@@ -15,19 +15,15 @@ import { useFetchQuiz, useFetchQuizzes } from "@/hooks/use-fetch";
 import { useQuizContext } from "@/hooks/use-quiz";
 
 export function QuizPage() {
-	const { id: idParam } = useParams();
-	if (!idParam) throw new Error("Quiz id param is required");
-	const id = Number(idParam);
+	const { id } = useParams();
+	if (!id) throw new Error("Quiz id param is required");
 
 	const { quizzes, loading: quizzesLoading, error: quizzesError } = useFetchQuizzes();
 	const { quiz, loading: quizLoading, error: quizError } = useFetchQuiz(id);
 
-	console.log(quiz?.savedAnswers)
-
 	const quizCtx = useQuizContext();
 	const { dispatch } = quizCtx;
-
-	const selectedQuiz = quizzes.find((quiz) => quiz?.id === id);
+	const selectedQuiz = quizzes.find((quiz) => quiz?.id.toString() === id);
 
 	const { title, quizStatus } = selectedQuiz || {};
 
@@ -73,7 +69,7 @@ export function QuizPage() {
 						//setSavedAnswers(quizAnswers);
 						//setQuizStatus(QuizStatus.Completed);
 
-						dispatch({ type: "COMPLETE_QUIZ", quizId: String(id) });
+						dispatch({ type: "COMPLETE_QUIZ", quizId: id });
 					}}
 				/>
 			)}

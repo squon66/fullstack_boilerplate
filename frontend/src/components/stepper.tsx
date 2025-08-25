@@ -35,7 +35,7 @@ type NextButtonProps = {
 export function QuizStepper({ questions, onComplete }: StepperProps) {
   const quizCtx = useQuizContext()
 
-  const { state, dispatch } = quizCtx;
+  const { dispatch } = quizCtx;
   if (!questions.length) {
     return <div className="text-red-500 p-4">No questions available for this quiz.</div>;
   }
@@ -54,7 +54,8 @@ export function QuizStepper({ questions, onComplete }: StepperProps) {
       onComplete(answerValues);
     }
   };
-    const handlePrevious = (): void => {
+  
+  const handlePrevious = (): void => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
