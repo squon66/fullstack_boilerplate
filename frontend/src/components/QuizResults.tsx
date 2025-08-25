@@ -38,7 +38,7 @@ export function QuizResults({ questions, answers }: QuizResultsProps) {
             <QuizResultsHeading>Incorrect Answers</QuizResultsHeading>
             {incorrectAnswers.length === 0 && <div>None! Great job!</div>}
             {incorrectAnswers.map(q => {
-                return <QuizResultAnswers question={q} answers={answers} />;
+                return <QuizResultAnswers key={q.id} question={q} answers={answers} />;
             })}
         </div>
     )

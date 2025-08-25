@@ -2,7 +2,7 @@ import { QuizStatus } from "@/components/quiz";
 import { useQuizContext } from "@/hooks/use-quiz";
 import { quizApiUrl, quizzesApiUrl } from "@/paths";
 import { STORAGE_KEY } from "@/quiz-reducer";
-import { CurrentQuizData, Quiz, QuizAnswer, QuizQuestion, QuizWithProgress } from "@/types/quiz-types";
+import type { CurrentQuizData, Quiz, QuizAnswer, QuizQuestion, QuizWithProgress } from "@/types/quiz-types";
 import { useEffect, useState } from "react";
 
 export function useFetchQuizzes(): {
@@ -42,7 +42,7 @@ export function useFetchQuizzes(): {
         dispatch({ type: "SET_QUIZZES_DATA", quizzes: quizzesWithProgress });
       })
       .catch(setError);
-  }, [state.quizzes, dispatch, setError]);
+  }, [state.quizzes, dispatch]);
 
   return {
     quizzes: state.quizzes,
@@ -98,7 +98,7 @@ export function useFetchQuiz(quizId: string): {
       })
       .catch(setError);
 
-  }, [quizId, dispatch, setError]);
+  }, [quizId, dispatch, state.currentQuiz]);
 
   return { quiz: state.currentQuiz, loading: !state.currentQuiz, error };
 }

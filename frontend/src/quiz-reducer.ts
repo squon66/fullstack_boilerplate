@@ -23,20 +23,16 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
       return action.payload;
 
     case "SET_CURRENT_QUIZ":
-      const updatedQuiz = {
+      return  {
         ...state,
         currentQuiz: action.quiz,
       };
 
-      return updatedQuiz;
-
     case "SET_QUIZZES_DATA":
-      const updatedQuizzes = {
+      return {
         ...state,
         quizzes: action.quizzes,
       };
-
-      return updatedQuizzes;
 
     case "START_QUIZ": {
         const quizId = action.quizId;
